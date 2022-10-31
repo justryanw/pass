@@ -13,18 +13,15 @@ use gtk::{
     prelude::InitializingWidgetExt,
     subclass::{
         application_window::ApplicationWindowImpl,
-        prelude::{TemplateChild, WidgetImpl, WindowImpl},
-        widget::{CompositeTemplate, WidgetClassSubclassExt},
+        prelude::{WidgetImpl, WindowImpl},
+        widget::CompositeTemplate,
     },
-    Button, CompositeTemplate,
+    CompositeTemplate,
 };
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/main-window.ui")]
-pub struct MainWindowTemplate {
-    #[template_child]
-    pub button: TemplateChild<Button>,
-}
+pub struct MainWindowTemplate;
 
 #[object_subclass]
 impl ObjectSubclass for MainWindowTemplate {
