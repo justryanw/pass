@@ -20,7 +20,7 @@ use gtk::{
 };
 
 #[derive(CompositeTemplate, Default)]
-#[template(file = "../../content/main-window.ui")]
+#[template(resource = "/main-window.ui")]
 pub struct MainWindowTemplate {
     #[template_child]
     pub button: TemplateChild<Button>,
