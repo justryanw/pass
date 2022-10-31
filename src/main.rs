@@ -1,26 +1,19 @@
-use adw::{prelude::*, Application, ApplicationWindow, HeaderBar, WindowTitle};
-use adw::gtk::{Box, Orientation};
+use adw::{prelude::*, Application};
+
+mod main_window;
+use main_window::MainWindow;
 
 fn main() {
-    let app = Application::new(Some("com.example.pass"), Default::default());
+	let app = Application::builder()
+		.application_id("com.example.pass")
+		.build();
 
-    app.connect_activate(build_ui);
-    app.run();
+	app.connect_activate(build_ui);
+	app.run();
 }
 
 fn build_ui(app: &Application) {
-    let content = Box::new(Orientation::Vertical, 0);
-    content.append(&HeaderBar::builder()
-        .title_widget(&WindowTitle::new("Password Manager", ""))
-        .build());
+	let window = MainWindow::new(app);
 
-    let window = ApplicationWindow::builder()
-        .application(app)
-        .title("Password Manager")
-        .default_width(400)
-        .default_height(250)
-        .content(&content)
-        .build();
-
-    window.show();
+	window.show();
 }
