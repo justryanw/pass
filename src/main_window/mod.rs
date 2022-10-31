@@ -2,10 +2,13 @@ mod template;
 
 use template::MainWindowTemplate;
 
-use glib::{wrapper, Object};
-use gio::{ActionGroup, ActionMap};
-use gtk::{Accessible, ApplicationWindow, Buildable, ConstraintTarget, Native, Root, ShortcutManager, Widget, Window};
 use adw::Application;
+use gio::{ActionGroup, ActionMap};
+use glib::{wrapper, Object};
+use gtk::{
+    Accessible, ApplicationWindow, Buildable, ConstraintTarget, Native, Root, ShortcutManager,
+    Widget, Window,
+};
 
 wrapper! {
     pub struct MainWindow(ObjectSubclass<MainWindowTemplate>)

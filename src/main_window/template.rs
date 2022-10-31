@@ -1,6 +1,6 @@
 use super::MainWindow;
 
-
+use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow};
 use glib::{
     object_subclass,
     subclass::{
@@ -18,7 +18,6 @@ use gtk::{
     },
     Button, CompositeTemplate,
 };
-use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow};
 
 #[derive(CompositeTemplate, Default)]
 #[template(file = "../../content/main-window.ui")]
