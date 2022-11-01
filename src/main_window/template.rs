@@ -1,7 +1,7 @@
 use super::MainWindow;
 use crate::{
     password_list::PasswordList,
-    field_list::FieldList,
+    field_list::FieldList, password_item::PasswordItem,
 };
 
 
@@ -56,6 +56,14 @@ impl ObjectSubclass for MainWindowTemplate {
 impl ObjectImpl for MainWindowTemplate {
     fn constructed(&self) {
         self.parent_constructed();
+
+        let password_model = vec![
+            PasswordItem::new("Google", "example"),
+            PasswordItem::new("Facebook", "example"),
+            PasswordItem::new("Amazon", "example"),
+        ];
+
+        self.password_list.set_model(password_model);
     }
 }
 
