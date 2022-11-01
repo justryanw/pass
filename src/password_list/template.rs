@@ -8,7 +8,7 @@ use glib::{
         types::ObjectSubclass,
         InitializingObject, Signal,
     },
-    ParamFlags, ParamSpec, ParamSpecBoolean, StaticType, ToValue,
+    ParamFlags, ParamSpec, ParamSpecBoolean, StaticType, ToValue, ObjectExt,
 };
 use gtk::{
     prelude::InitializingWidgetExt,
@@ -16,7 +16,7 @@ use gtk::{
         prelude::{BoxImpl, TemplateChild, WidgetImpl},
         widget::{CompositeTemplate, WidgetClassSubclassExt},
     },
-    Box, CompositeTemplate, ListBox,
+    Box, CompositeTemplate, ListBox, traits::WidgetExt,
 };
 
 #[derive(CompositeTemplate, Default)]
@@ -88,6 +88,14 @@ impl ObjectImpl for PasswordListTemplate {
 
     fn constructed(&self) {
         self.parent_constructed();
+
+        self.list_box.connect_row_selected(|source, selected_row| {
+            let selection = selected_row.unwrap();
+            let password_list = source.parent().unwrap().parent().unwrap();
+            let name: String = selection.property("title");
+
+            password_list.emit_by_name::<()>("changed", &[&name.clone()]);
+        });
     }
 }
 
