@@ -1,18 +1,17 @@
-use super::MainWindow;
-use crate::{
-    password_list::PasswordList,
-    field_list::FieldList, password_item::PasswordItem,
-};
+use std::rc::Rc;
 
+use super::MainWindow;
+use crate::{field_list::FieldList, password_item::PasswordItem, password_list::PasswordList};
 
 use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow, Leaflet};
 use glib::{
-    object_subclass,
+    clone, object_subclass,
     subclass::{
         object::{ObjectImpl, ObjectImplExt},
-        types::{ObjectSubclass},
+        types::ObjectSubclass,
         InitializingObject,
     },
+    ObjectExt,
 };
 use gtk::{
     prelude::InitializingWidgetExt,
@@ -29,10 +28,10 @@ use gtk::{
 pub struct MainWindowTemplate {
     #[template_child]
     pub leaflet: TemplateChild<Leaflet>,
-  
+
     #[template_child]
     pub password_list: TemplateChild<PasswordList>,
-  
+
     #[template_child]
     pub field_list: TemplateChild<FieldList>,
 }
@@ -63,7 +62,22 @@ impl ObjectImpl for MainWindowTemplate {
             PasswordItem::new("Amazon", "example"),
         ];
 
-        self.password_list.set_model(password_model);
+        self.password_list.set_model(password_model.clone());
+
+        let password_model_rt = Rc::new(password_model.clone());
+
+        self.password_list.connect_local(
+            "changed",
+            false,
+            clone!(
+            @strong password_model_rt => move |values| {
+                let value: String = values[1].get().unwrap();
+
+                println!("{}", value);
+
+                None
+            }),
+        );
     }
 }
 
