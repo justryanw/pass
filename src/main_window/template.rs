@@ -65,19 +65,24 @@ impl ObjectImpl for MainWindowTemplate {
         self.password_list.set_model(password_model.clone());
 
         let password_model_rt = Rc::new(password_model.clone());
+        let field_list_rt = Rc::new(self.field_list.clone());
 
         self.password_list.connect_local(
             "changed",
             false,
             clone!(
-            @strong password_model_rt => move |values| {
+            @strong password_model_rt, @strong field_list_rt => move |values| {
                 let value: String = values[1].get().unwrap();
                 let selection = password_model_rt.iter().find(|x| x.property::<String>("name") == value).unwrap();
+
 
                 let name: String = selection.property::<String>("name");
 
                 println!("{}", value);
                 println!("{}", name);
+
+                // password_model_rt.append(&mut vec![PasswordItem::new("test", "example")]);
+                // self.password_list.set_model(password_model.clone());
 
                 None
             }),

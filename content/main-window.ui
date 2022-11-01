@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="MainWindow" parent="AdwApplicationWindow">
-    <property name="width-request">200</property>
-    <property name="height-request">200</property>
+    <property name="default_width">400</property>
+    <property name="default_height">400</property>
     <property name="title" translatable="yes">Password Manager</property>
     <child>
       <object class="AdwLeaflet" id="leaflet">
