@@ -6,9 +6,9 @@ use glib::{
     subclass::{
         object::{ObjectImpl, ObjectImplExt},
         types::ObjectSubclass,
-        InitializingObject,
+        InitializingObject, Signal,
     },
-    ParamFlags, ParamSpec, ParamSpecBoolean, ToValue,
+    ParamFlags, ParamSpec, ParamSpecBoolean, StaticType, ToValue,
 };
 use gtk::{
     prelude::InitializingWidgetExt,
@@ -74,6 +74,16 @@ impl ObjectImpl for PasswordListTemplate {
             "show-end-title-buttons" => self.header_bar.shows_end_title_buttons().to_value(),
             _ => unimplemented!(),
         }
+    }
+
+    fn signals() -> &'static [Signal] {
+        static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
+            vec![Signal::builder("changed")
+                .param_types([String::static_type()])
+                .build()]
+        });
+
+        SIGNALS.as_ref()
     }
 
     fn constructed(&self) {
