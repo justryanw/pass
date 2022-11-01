@@ -1,4 +1,5 @@
 mod field_list;
+mod password_item;
 mod password_list;
 mod main_window;
 

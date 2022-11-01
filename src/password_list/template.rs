@@ -16,7 +16,7 @@ use gtk::{
         prelude::{BoxImpl, TemplateChild, WidgetImpl},
         widget::{CompositeTemplate, WidgetClassSubclassExt},
     },
-    Box, CompositeTemplate,
+    Box, CompositeTemplate, ListBox,
 };
 
 #[derive(CompositeTemplate, Default)]
@@ -24,6 +24,9 @@ use gtk::{
 pub struct PasswordListTemplate {
     #[template_child]
     pub header_bar: TemplateChild<HeaderBar>,
+
+    #[template_child]
+    pub list_box: TemplateChild<ListBox>,
 }
 
 #[object_subclass]
