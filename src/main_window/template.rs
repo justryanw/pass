@@ -72,8 +72,12 @@ impl ObjectImpl for MainWindowTemplate {
             clone!(
             @strong password_model_rt => move |values| {
                 let value: String = values[1].get().unwrap();
+                let selection = password_model_rt.iter().find(|x| x.property::<String>("name") == value).unwrap();
+
+                let name: String = selection.property::<String>("name");
 
                 println!("{}", value);
+                println!("{}", name);
 
                 None
             }),
