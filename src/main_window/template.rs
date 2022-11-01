@@ -1,12 +1,11 @@
 use super::MainWindow;
 use crate::{
-    password_list::{template::PasswordListTemplate, PasswordList},
-    field_list::{template::FieldListTemplate, FieldList},
+    password_list::PasswordList,
+    field_list::FieldList,
 };
 
 
 use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow, Leaflet};
-use gio::subclass::prelude::ObjectSubclassExt;
 use glib::{
     object_subclass,
     subclass::{
@@ -16,13 +15,13 @@ use glib::{
     },
 };
 use gtk::{
-    prelude::{InitializingWidgetExt, GObjectPropertyExpressionExt},
+    prelude::InitializingWidgetExt,
     subclass::{
         application_window::ApplicationWindowImpl,
         prelude::{TemplateChild, WidgetImpl, WindowImpl},
         widget::{CompositeTemplate, WidgetClassSubclassExt},
     },
-    CompositeTemplate, Widget,
+    CompositeTemplate,
 };
 
 #[derive(CompositeTemplate, Default)]
@@ -57,21 +56,6 @@ impl ObjectSubclass for MainWindowTemplate {
 impl ObjectImpl for MainWindowTemplate {
     fn constructed(&self) {
         self.parent_constructed();
-
-        let password_list = self.password_list.get();
-        let password_list_tempalte = PasswordListTemplate::from_instance(&password_list);
-
-        let field_list = self.field_list.get();
-        let field_list_template = FieldListTemplate::from_instance(&field_list);
-
-        self.leaflet.property_expression("folded")
-            .bind(&password_list_tempalte.header_bar.get(), "show-end-title-buttons", Widget::NONE);
-        
-        self.leaflet.property_expression("folded")
-            .bind(&field_list_template.header_bar.get(), "show-start-title-buttons", Widget::NONE);
-
-        self.leaflet.property_expression("folded")
-            .bind(&field_list_template.back_button.get(), "visible", Widget::NONE);
     }
 }
 
