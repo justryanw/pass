@@ -2,6 +2,7 @@
 
 <interface>
   <template class="FieldList" parent="GtkBox">
+    <property name="width-request">300</property>
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
