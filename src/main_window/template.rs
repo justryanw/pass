@@ -1,27 +1,42 @@
 use super::MainWindow;
+use crate::{
+    password_list::{template::PasswordListTemplate, PasswordList},
+    field_list::{template::FieldListTemplate, FieldList},
+};
 
-use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow};
+
+use adw::{subclass::prelude::AdwApplicationWindowImpl, ApplicationWindow, Leaflet};
+use gio::subclass::prelude::ObjectSubclassExt;
 use glib::{
     object_subclass,
     subclass::{
         object::{ObjectImpl, ObjectImplExt},
-        types::ObjectSubclass,
+        types::{ObjectSubclass},
         InitializingObject,
     },
 };
 use gtk::{
-    prelude::InitializingWidgetExt,
+    prelude::{InitializingWidgetExt, GObjectPropertyExpressionExt},
     subclass::{
         application_window::ApplicationWindowImpl,
-        prelude::{WidgetImpl, WindowImpl},
-        widget::CompositeTemplate,
+        prelude::{TemplateChild, WidgetImpl, WindowImpl},
+        widget::{CompositeTemplate, WidgetClassSubclassExt},
     },
-    CompositeTemplate,
+    CompositeTemplate, Widget,
 };
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/main-window.ui")]
-pub struct MainWindowTemplate;
+pub struct MainWindowTemplate {
+    #[template_child]
+    pub leaflet: TemplateChild<Leaflet>,
+  
+    #[template_child]
+    pub password_list: TemplateChild<PasswordList>,
+  
+    #[template_child]
+    pub field_list: TemplateChild<FieldList>,
+}
 
 #[object_subclass]
 impl ObjectSubclass for MainWindowTemplate {
@@ -42,6 +57,21 @@ impl ObjectSubclass for MainWindowTemplate {
 impl ObjectImpl for MainWindowTemplate {
     fn constructed(&self) {
         self.parent_constructed();
+
+        let password_list = self.password_list.get();
+        let password_list_tempalte = PasswordListTemplate::from_instance(&password_list);
+
+        let field_list = self.field_list.get();
+        let field_list_template = FieldListTemplate::from_instance(&field_list);
+
+        self.leaflet.property_expression("folded")
+            .bind(&password_list_tempalte.header_bar.get(), "show-end-title-buttons", Widget::NONE);
+        
+        self.leaflet.property_expression("folded")
+            .bind(&field_list_template.header_bar.get(), "show-start-title-buttons", Widget::NONE);
+
+        self.leaflet.property_expression("folded")
+            .bind(&field_list_template.back_button.get(), "visible", Widget::NONE);
     }
 }
 

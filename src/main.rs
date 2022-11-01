@@ -1,7 +1,10 @@
-use adw::{prelude::*, Application};
-
+mod field_list;
+mod password_list;
 mod main_window;
+
 use main_window::MainWindow;
+
+use adw::{prelude::*, Application};
 use gio::resources_register_include;
 
 fn main() {
