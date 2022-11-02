@@ -8,7 +8,7 @@ use adw::NavigationDirection;
 use glib::{clone, Object};
 use gtk::glib::BindingFlags;
 use gtk::{
-    gio, glib, pango, Dialog, DialogFlags, Entry, Label, ListBoxRow, ResponseType, SelectionMode,
+    gio, glib, pango, Dialog, DialogFlags, Entry, Label, ListBoxRow, ResponseType, SelectionMode, PasswordEntry,
 };
 
 use crate::login_object::{LoginData, LoginObject};
@@ -40,6 +40,13 @@ impl Window {
             .logins
             .get()
             .expect("`logins` should be set in `setup_logins`.")
+            .clone()
+    }
+
+    fn master_password(&self) -> String {
+        self.imp()
+            .master_password
+            .borrow()
             .clone()
     }
 
@@ -189,7 +196,9 @@ impl Window {
     }
 
     fn set_stack(&self) {
-        if self.logins().n_items() > 0 {
+        if self.master_password().is_empty() {
+            self.imp().stack.set_visible_child_name("password-placeholder");
+        } else if self.logins().n_items() > 0 {
             self.imp().stack.set_visible_child_name("main");
         } else {
             self.imp().stack.set_visible_child_name("placeholder");
@@ -209,6 +218,12 @@ impl Window {
             window.remove_login();
         }));
         self.add_action(&action_remove_login);
+
+        let action_unlock_vault = gio::SimpleAction::new("unlock-vault", None);
+        action_unlock_vault.connect_activate(clone!(@weak self as window => move |_, _| {
+            window.unlock_vault();
+        }));
+        self.add_action(&action_unlock_vault);
     }
 
     fn remove_login(&self) {
@@ -223,6 +238,78 @@ impl Window {
                 self.set_current_login(previous_login);
             }
         }
+    }
+
+    fn unlock_vault(&self) {
+        // Create new Dialog
+        let dialog = Dialog::with_buttons(
+            Some("Unlock Vault"),
+            Some(self),
+            DialogFlags::MODAL | DialogFlags::DESTROY_WITH_PARENT | DialogFlags::USE_HEADER_BAR,
+            &[
+                ("Cancel", ResponseType::Cancel),
+                ("Unlock", ResponseType::Accept),
+            ],
+        );
+        dialog.set_default_response(ResponseType::Accept);
+
+        // Make the dialog button insensitive initially
+        let dialog_button = dialog
+            .widget_for_response(ResponseType::Accept)
+            .expect("The dialog needs to have a widget for response type `Accept`.");
+        dialog_button.set_sensitive(false);
+
+        let entry = PasswordEntry::builder()
+            .margin_top(12)
+            .margin_bottom(12)
+            .margin_start(12)
+            .margin_end(12)
+            .placeholder_text("Master Password")
+            .activates_default(true)
+            .show_peek_icon(true)
+            .build();
+        dialog.content_area().append(&entry);
+
+        // Set entry's css class to "error", when there is not text in it
+        entry.connect_changed(clone!(@weak dialog => move |entry| {
+            let text = entry.text();
+            let dialog_button = dialog.
+                widget_for_response(ResponseType::Accept).
+                expect("The dialog needs to have a widget for response type `Accept`.");
+            let empty = text.is_empty();
+
+            dialog_button.set_sensitive(!empty);
+
+            if empty {
+                entry.add_css_class("error");
+            } else {
+                entry.remove_css_class("error");
+            }
+        }));
+
+        // Connect response to dialog
+        dialog.connect_response(
+            clone!(@weak self as window, @weak entry => move |dialog, response| {
+                // Return if the user chose a response different than `Accept`
+                if response != ResponseType::Accept {
+                    dialog.destroy();
+                    return;
+                }
+
+                if entry.text().to_string() != "Password".to_string() {
+                    entry.add_css_class("error");
+                    return;
+                }
+
+                dialog.destroy();
+                window.imp().master_password.replace(entry.text().to_string());
+                window.set_stack();
+
+                // Let the leaflet navigate to the next child
+                window.imp().leaflet.navigate(NavigationDirection::Forward);
+            }),
+        );
+        dialog.present();
     }
 
     fn new_login(&self) {
@@ -244,13 +331,13 @@ impl Window {
             .expect("The dialog needs to have a widget for response type `Accept`.");
         dialog_button.set_sensitive(false);
 
-        // Create entry and add it to the dialog
+        // create entry and add it to the dialog
         let entry = Entry::builder()
             .margin_top(12)
             .margin_bottom(12)
             .margin_start(12)
             .margin_end(12)
-            .placeholder_text("Name")
+            .placeholder_text("name")
             .activates_default(true)
             .build();
         dialog.content_area().append(&entry);

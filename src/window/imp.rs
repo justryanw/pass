@@ -18,6 +18,7 @@ use crate::utils::data_path;
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/com/ryanjwalker/pass/window.ui")]
 pub struct Window {
+    pub master_password: RefCell<String>,
     #[template_child]
     pub title_field: TemplateChild<EntryRow>,
     #[template_child]
@@ -58,7 +59,6 @@ impl ObjectImpl for Window {
 
         let obj = self.obj();
         obj.setup_logins();
-        obj.restore_data();
         obj.setup_callbacks();
         obj.setup_actions();
     }
