@@ -457,7 +457,7 @@ impl Window {
             .margin_bottom(12)
             .margin_start(12)
             .margin_end(12)
-            .placeholder_text("name")
+            .placeholder_text("Name")
             .activates_default(true)
             .build();
         dialog.content_area().append(&entry);
