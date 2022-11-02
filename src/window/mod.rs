@@ -109,13 +109,16 @@ impl Window {
 
         // Bind fields to selected login data
         bindings.append(&mut vec![
-            login.bind_property("title", &title_field, "text")
+            login
+                .bind_property("title", &title_field, "text")
                 .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
                 .build(),
-            login.bind_property("username", &username_field, "text")
+            login
+                .bind_property("username", &username_field, "text")
                 .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
                 .build(),
-            login.bind_property("password", &password_field, "text")
+            login
+                .bind_property("password", &password_field, "text")
                 .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
                 .build(),
         ]);
@@ -141,11 +144,10 @@ impl Window {
     fn setup_callbacks(&self) {
         // Setup callback when items of logins change
         self.set_stack();
-        self.logins().connect_items_changed(
-            clone!(@weak self as window => move |_, _, _, _| {
+        self.logins()
+            .connect_items_changed(clone!(@weak self as window => move |_, _, _, _| {
                 window.set_stack();
-            }),
-        );
+            }));
 
         // Setup callback for activating a row of logins list
         self.imp().logins_list.connect_row_activated(
@@ -196,11 +198,31 @@ impl Window {
 
     fn setup_actions(&self) {
         // Create action to create new login and add to action group "win"
-        let action_new_list = gio::SimpleAction::new("new-login", None);
-        action_new_list.connect_activate(clone!(@weak self as window => move |_, _| {
+        let action_new_login = gio::SimpleAction::new("new-login", None);
+        action_new_login.connect_activate(clone!(@weak self as window => move |_, _| {
             window.new_login();
         }));
-        self.add_action(&action_new_list);
+        self.add_action(&action_new_login);
+
+        let action_remove_login = gio::SimpleAction::new("remove-login", None);
+        action_remove_login.connect_activate(clone!(@weak self as window => move |_, _| {
+            window.remove_login();
+        }));
+        self.add_action(&action_remove_login);
+    }
+
+    fn remove_login(&self) {
+        if let Some(index) = self.logins().find(&self.current_login()) {
+            self.logins().remove(index);
+
+            if let Some(next_login) = self.logins().item(index) {
+                let next_login = next_login.downcast::<LoginObject>().unwrap();
+                self.set_current_login(next_login);
+            } else if let Some(previous_login) = self.logins().item(index.wrapping_sub(1)) {
+                let previous_login = previous_login.downcast::<LoginObject>().unwrap();
+                self.set_current_login(previous_login);
+            }
+        }
     }
 
     fn new_login(&self) {

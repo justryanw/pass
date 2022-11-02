@@ -75,6 +75,13 @@
                             <property name="action-name">win.new-login</property>
                           </object>
                         </child>
+                        <child type="start">
+                          <object class="GtkToggleButton">
+                            <property name="icon-name">user-trash-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Remove Item</property>
+                            <property name="action-name">win.remove-login</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
