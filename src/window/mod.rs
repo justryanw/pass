@@ -69,11 +69,12 @@ impl Window {
         )
     }
 
-    fn restore_data(&self) {
+    fn unlock_and_restore(&self, password: &String) -> Result<(), ()> {
         if let Ok(file) = File::open(data_path()) {
             // Deserialize data from file to vector
             let backup_data: Vec<LoginData> = serde_json::from_reader(file)
                 .expect("It should be possible to read `backup_data` from the json file.");
+
 
             // Convert `Vec<LoginData>` to `Vec<LoginObject>`
             let logins: Vec<LoginObject> = backup_data
@@ -89,6 +90,8 @@ impl Window {
                 self.set_current_login(first_login.clone());
             }
         }
+
+        Err(())
     }
 
     fn create_login_row(&self, login_object: &LoginObject) -> ListBoxRow {
@@ -270,7 +273,7 @@ impl Window {
             .build();
         dialog.content_area().append(&entry);
 
-        // Set entry's css class to "error", when there is not text in it
+        // Set entry's css class to "error", when there is no text in it
         entry.connect_changed(clone!(@weak dialog => move |entry| {
             let text = entry.text();
             let dialog_button = dialog.
@@ -296,13 +299,16 @@ impl Window {
                     return;
                 }
 
-                if entry.text().to_string() != "Password".to_string() {
+                let password = entry.text().to_string();
+
+                // Set entry's css class to "error" if the vault fails to unlock
+                if window.unlock_and_restore(&password).is_err() {
                     entry.add_css_class("error");
                     return;
                 }
 
                 dialog.destroy();
-                window.imp().master_password.replace(entry.text().to_string());
+                window.imp().master_password.replace(password);
                 window.set_stack();
 
                 // Let the leaflet navigate to the next child
