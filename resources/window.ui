@@ -30,7 +30,7 @@
                         <property name="description" translatable="yes">Create a login to start using the app.</property>
                         <property name="child">
                           <object class="GtkButton">
-                            <property name="label" translatable="yes">_New Item</property>
+                            <property name="label" translatable="yes">_New Login</property>
                             <property name="use-underline">True</property>
                             <property name="halign">center</property>
                             <property name="action-name">win.new-login</property>
@@ -172,14 +172,14 @@
                         <child type="start">
                           <object class="GtkToggleButton">
                             <property name="icon-name">list-add-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">New Item</property>
+                            <property name="tooltip-text" translatable="yes">New Login</property>
                             <property name="action-name">win.new-login</property>
                           </object>
                         </child>
                         <child type="start">
                           <object class="GtkToggleButton">
                             <property name="icon-name">user-trash-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Remove Item</property>
+                            <property name="tooltip-text" translatable="yes">Remove Login</property>
                             <property name="action-name">win.remove-login</property>
                           </object>
                         </child>

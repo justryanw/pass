@@ -341,7 +341,7 @@ impl Window {
             .margin_bottom(12)
             .margin_start(12)
             .margin_end(12)
-            .label("Are you sure you want to delte the Vault?\nThis cannot be undone.")
+            .label("Are you sure you want to delete the Vault?\nThis cannot be undone.")
             .build();
         dialog.content_area().append(&entry);
 
