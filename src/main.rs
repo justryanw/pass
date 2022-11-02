@@ -1,27 +1,29 @@
-mod field_list;
-mod password_item;
-mod password_list;
-mod main_window;
+mod login_object;
+mod utils;
+mod window;
 
-use main_window::MainWindow;
+use adw::prelude::*;
+use gtk::gio;
+use window::Window;
 
-use adw::{prelude::*, Application};
-use gio::resources_register_include;
+static APP_ID: &str = "com.ryanjwalker.pass";
 
 fn main() {
-    resources_register_include!("password-manager.gresource")
+    gio::resources_register_include!("pass.gresource")
         .expect("Failed to register resources.");
 
-    let app = Application::builder()
-        .application_id("com.example.pass")
-        .build();
+    // Create a new application
+    let app = adw::Application::builder().application_id(APP_ID).build();
 
+    // Connect to signals
     app.connect_activate(build_ui);
+
+    // Run the application
     app.run();
 }
 
-fn build_ui(app: &Application) {
-    let window = MainWindow::new(app);
-
+fn build_ui(app: &adw::Application) {
+    // Create a new custom window and show it
+    let window = Window::new(app);
     window.show();
 }

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<gresources>
-    <gresource>
-        <file compressed="true">main-window.ui</file>
-        <file compressed="true">password-list.ui</file>
-        <file compressed="true">field-list.ui</file>
-    </gresource>
-</gresources>
