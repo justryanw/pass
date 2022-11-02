@@ -11,7 +11,7 @@ use gtk::{
 };
 
 use crate::login_object::LoginObject;
-use crate::utils::{database_exists, read_database};
+use crate::utils::{database_exists, delete_database, read_database, write_database};
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -222,11 +222,23 @@ impl Window {
         }));
         self.add_action(&action_remove_login);
 
+        let action_create_vault = gio::SimpleAction::new("create-vault", None);
+        action_create_vault.connect_activate(clone!(@weak self as window => move |_, _| {
+            window.create_vault();
+        }));
+        self.add_action(&action_create_vault);
+
         let action_unlock_vault = gio::SimpleAction::new("unlock-vault", None);
         action_unlock_vault.connect_activate(clone!(@weak self as window => move |_, _| {
             window.unlock_vault();
         }));
         self.add_action(&action_unlock_vault);
+
+        let action_delete_vault = gio::SimpleAction::new("delete-vault", None);
+        action_delete_vault.connect_activate(clone!(@weak self as window => move |_, _| {
+            window.delete_vault();
+        }));
+        self.add_action(&action_delete_vault);
     }
 
     fn remove_login(&self) {
@@ -241,6 +253,108 @@ impl Window {
                 self.set_current_login(previous_login);
             }
         }
+    }
+
+    fn create_vault(&self) {
+        // Create new Dialog
+        let dialog = Dialog::with_buttons(
+            Some("Create Vault"),
+            Some(self),
+            DialogFlags::MODAL | DialogFlags::DESTROY_WITH_PARENT | DialogFlags::USE_HEADER_BAR,
+            &[
+                ("Cancel", ResponseType::Cancel),
+                ("Create", ResponseType::Accept),
+            ],
+        );
+        dialog.set_default_response(ResponseType::Accept);
+
+        // Make the dialog button insensitive initially
+        let dialog_button = dialog
+            .widget_for_response(ResponseType::Accept)
+            .expect("The dialog needs to have a widget for response type `Accept`.");
+        dialog_button.set_sensitive(false);
+
+        let entry = PasswordEntry::builder()
+            .margin_top(12)
+            .margin_bottom(12)
+            .margin_start(12)
+            .margin_end(12)
+            .placeholder_text("Master Password")
+            .activates_default(true)
+            .show_peek_icon(true)
+            .build();
+        dialog.content_area().append(&entry);
+
+        // Set entry's css class to "error", when there is no text in it
+        entry.connect_changed(clone!(@weak dialog => move |entry| {
+            let text = entry.text();
+            let dialog_button = dialog.
+                widget_for_response(ResponseType::Accept).
+                expect("The dialog needs to have a widget for response type `Accept`.");
+            let empty = text.is_empty();
+
+            dialog_button.set_sensitive(!empty);
+
+            if empty {
+                entry.add_css_class("error");
+            } else {
+                entry.remove_css_class("error");
+            }
+        }));
+
+        // Connect response to dialog
+        dialog.connect_response(
+            clone!(@weak self as window, @weak entry => move |dialog, response| {
+                // Return if the user chose a response different than `Accept`
+                if response != ResponseType::Accept {
+
+                dialog.destroy();
+                    return;
+                }
+
+                write_database(Vec::new(), &entry.text().to_string());
+
+                dialog.destroy();
+                window.set_stack();
+
+                // Let the leaflet navigate to the next child
+                window.imp().leaflet.navigate(NavigationDirection::Forward);
+            }),
+        );
+        dialog.present();
+    }
+
+    fn delete_vault(&self) {
+        let dialog = Dialog::with_buttons(
+            Some("Delete Vault"),
+            Some(self),
+            DialogFlags::DESTROY_WITH_PARENT | DialogFlags::MODAL | DialogFlags::USE_HEADER_BAR,
+            &[
+                ("Cancel", ResponseType::Cancel),
+                ("Delete", ResponseType::DeleteEvent),
+            ],
+        );
+        dialog.set_default_response(ResponseType::Cancel);
+
+        let entry = Label::builder()
+            .margin_top(12)
+            .margin_bottom(12)
+            .margin_start(12)
+            .margin_end(12)
+            .label("Are you sure you want to delte the Vault?\nThis cannot be undone.")
+            .build();
+        dialog.content_area().append(&entry);
+
+        // Connect response to dialog
+        dialog.connect_response(clone!(@weak self as window => move |dialog, response| {
+            dialog.destroy();
+
+            if response == ResponseType::DeleteEvent {
+                delete_database();
+                window.set_stack();
+            }
+        }));
+        dialog.present();
     }
 
     fn unlock_vault(&self) {

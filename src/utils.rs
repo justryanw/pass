@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs::File};
+use std::{path::PathBuf, fs::{File, remove_file}};
 
 use borsh::{BorshDeserialize, BorshSerialize};
 use cocoon::Cocoon;
@@ -16,6 +16,10 @@ pub fn data_path() -> PathBuf {
 
 pub fn database_exists() -> bool {
     File::open(data_path()).is_ok()
+}
+
+pub fn delete_database() {
+    remove_file(data_path()).unwrap();
 }
 
 pub fn write_database(data: Vec<LoginData>, password: &String) {

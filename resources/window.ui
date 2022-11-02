@@ -70,15 +70,34 @@
                         <property name="title" translatable="yes">Unlock Vault</property>
                         <property name="description" translatable="yes">Unlock the vault to start using the app.</property>
                         <property name="child">
-                          <object class="GtkButton">
-                            <property name="label" translatable="yes">_Unlock Vault</property>
-                            <property name="use-underline">True</property>
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
                             <property name="halign">center</property>
-                            <property name="action-name">win.unlock-vault</property>
-                            <style>
-                              <class name="pill" />
-                              <class name="suggested-action" />
-                            </style>
+                            <property name="spacing">10</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label" translatable="yes">_Unlock Vault</property>
+                                <property name="use-underline">True</property>
+                                <property name="halign">center</property>
+                                <property name="action-name">win.unlock-vault</property>
+                                <style>
+                                  <class name="pill" />
+                                  <class name="suggested-action" />
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label" translatable="yes">_Delete Vault</property>
+                                <property name="use-underline">True</property>
+                                <property name="halign">center</property>
+                                <property name="action-name">win.delete-vault</property>
+                                <style>
+                                  <class name="pill" />
+                                  <class name="destructive-action" />
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </property>
                       </object>
@@ -115,7 +134,7 @@
                             <property name="label" translatable="yes">_Create Vault</property>
                             <property name="use-underline">True</property>
                             <property name="halign">center</property>
-                            <property name="action-name">win.unlock-vault</property>
+                            <property name="action-name">win.create-vault</property>
                             <style>
                               <class name="pill" />
                               <class name="suggested-action" />

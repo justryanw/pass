@@ -69,11 +69,8 @@ impl WindowImpl for Window {
 
         // Don't save data if no master password is set
         if master_password.is_empty() {
-            println!("master password empty {}", master_password);
             return self.parent_close_request();
         }
-
-        println!("master password not empty {}", master_password);
 
         // Store login data in vector
         let data: Vec<LoginData> = self
