@@ -1,11 +1,11 @@
 mod imp;
 
 use adw::subclass::prelude::*;
+use borsh::{BorshSerialize, BorshDeserialize};
 use glib::{Object, ObjectExt};
 use gtk::glib;
-use serde::{Deserialize, Serialize};
 
-#[derive(Default, Clone, Serialize, Deserialize)]
+#[derive(Default, Clone, BorshSerialize, BorshDeserialize)]
 pub struct LoginData {
     pub title: String,
     pub username: String,

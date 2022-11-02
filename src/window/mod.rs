@@ -1,18 +1,17 @@
 mod imp;
 
-use std::fs::File;
-
 use adw::prelude::*;
 use adw::subclass::prelude::*;
 use adw::NavigationDirection;
 use glib::{clone, Object};
 use gtk::glib::BindingFlags;
 use gtk::{
-    gio, glib, pango, Dialog, DialogFlags, Entry, Label, ListBoxRow, ResponseType, SelectionMode, PasswordEntry,
+    gio, glib, pango, Dialog, DialogFlags, Entry, Label, ListBoxRow, PasswordEntry, ResponseType,
+    SelectionMode,
 };
 
-use crate::login_object::{LoginData, LoginObject};
-use crate::utils::data_path;
+use crate::login_object::LoginObject;
+use crate::utils::{database_exists, read_database};
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -44,10 +43,7 @@ impl Window {
     }
 
     fn master_password(&self) -> String {
-        self.imp()
-            .master_password
-            .borrow()
-            .clone()
+        self.imp().master_password.borrow().clone()
     }
 
     fn setup_logins(&self) {
@@ -70,28 +66,26 @@ impl Window {
     }
 
     fn unlock_and_restore(&self, password: &String) -> Result<(), ()> {
-        if let Ok(file) = File::open(data_path()) {
-            // Deserialize data from file to vector
-            let backup_data: Vec<LoginData> = serde_json::from_reader(file)
-                .expect("It should be possible to read `backup_data` from the json file.");
+        if database_exists() {
+            // Read database
+            if let Ok(data) = read_database(password) {
+                // Convert `Vec<LoginData>` to `Vec<LoginObject>`
+                let logins: Vec<LoginObject> =
+                    data.into_iter().map(LoginObject::from_login_data).collect();
 
+                // Insert restored objects into model
+                self.logins().extend_from_slice(&logins);
 
-            // Convert `Vec<LoginData>` to `Vec<LoginObject>`
-            let logins: Vec<LoginObject> = backup_data
-                .into_iter()
-                .map(LoginObject::from_login_data)
-                .collect();
+                // Set first login as current
+                if let Some(first_login) = logins.first() {
+                    self.set_current_login(first_login.clone());
+                }
 
-            // Insert restored objects into model
-            self.logins().extend_from_slice(&logins);
-
-            // Set first login as current
-            if let Some(first_login) = logins.first() {
-                self.set_current_login(first_login.clone());
+                return Ok(());
             }
+            return Err(());
         }
-
-        Err(())
+        Ok(())
     }
 
     fn create_login_row(&self, login_object: &LoginObject) -> ListBoxRow {
@@ -200,7 +194,13 @@ impl Window {
 
     fn set_stack(&self) {
         if self.master_password().is_empty() {
-            self.imp().stack.set_visible_child_name("password-placeholder");
+            if database_exists() {
+                self.imp()
+                    .stack
+                    .set_visible_child_name("password-placeholder");
+            } else {
+                self.imp().stack.set_visible_child_name("vault-placeholder");
+            }
         } else if self.logins().n_items() > 0 {
             self.imp().stack.set_visible_child_name("main");
         } else {

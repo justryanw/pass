@@ -91,6 +91,47 @@
         </child>
         <child>
           <object class="GtkStackPage">
+            <property name="name">vault-placeholder</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkHeaderBar">
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkWindowHandle">
+                    <property name="vexpand">True</property>
+                    <property name="child">
+                      <object class="AdwStatusPage">
+                        <property name="icon-name">security-high-symbolic</property>
+                        <property name="title" translatable="yes">Create Vault</property>
+                        <property name="description" translatable="yes">Create a vault to start using the app.</property>
+                        <property name="child">
+                          <object class="GtkButton">
+                            <property name="label" translatable="yes">_Create Vault</property>
+                            <property name="use-underline">True</property>
+                            <property name="halign">center</property>
+                            <property name="action-name">win.unlock-vault</property>
+                            <style>
+                              <class name="pill" />
+                              <class name="suggested-action" />
+                            </style>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkStackPage">
             <property name="name">main</property>
             <property name="child">
               <object class="AdwLeaflet" id="leaflet">

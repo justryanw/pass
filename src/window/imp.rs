@@ -1,19 +1,16 @@
 use std::cell::RefCell;
-use std::fs::File;
 
-use adw::{prelude::*, EntryRow, PasswordEntryRow};
 use adw::subclass::prelude::*;
 use adw::Leaflet;
-use glib::Binding;
+use adw::{prelude::*, EntryRow, PasswordEntryRow};
+use glib::once_cell::sync::OnceCell;
 use glib::signal::Inhibit;
 use glib::subclass::InitializingObject;
-use gtk::{
-    gio, glib, Button, CompositeTemplate, ListBox, Stack,
-};
-use glib::once_cell::sync::OnceCell;
+use glib::Binding;
+use gtk::{gio, glib, Button, CompositeTemplate, ListBox, Stack};
 
 use crate::login_object::{LoginData, LoginObject};
-use crate::utils::data_path;
+use crate::utils::{self};
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/com/ryanjwalker/pass/window.ui")]
@@ -68,8 +65,18 @@ impl WidgetImpl for Window {}
 
 impl WindowImpl for Window {
     fn close_request(&self) -> Inhibit {
+        let master_password = self.master_password.borrow();
+
+        // Don't save data if no master password is set
+        if master_password.is_empty() {
+            println!("master password empty {}", master_password);
+            return self.parent_close_request();
+        }
+
+        println!("master password not empty {}", master_password);
+
         // Store login data in vector
-        let backup_data: Vec<LoginData> = self
+        let data: Vec<LoginData> = self
             .obj()
             .logins()
             .snapshot()
@@ -78,10 +85,7 @@ impl WindowImpl for Window {
             .map(LoginObject::to_login_data)
             .collect();
 
-        // Save state to file
-        let file = File::create(data_path()).expect("Could not create json file.");
-        serde_json::to_writer_pretty(file, &backup_data)
-            .expect("Could not write data to json file");
+        utils::write_database(data, &master_password);
 
         // Pass close request on to the parent
         self.parent_close_request()
