@@ -100,19 +100,25 @@ impl Window {
 
     fn set_current_login(&self, login: LoginObject) {
         let title_field = self.imp().title_field.get();
-        // let username_field = self.imp().username_field.get();
+        let username_field = self.imp().username_field.get();
+        let password_field = self.imp().password_field.get();
 
         // Unbind all fields
         self.unbind();
         let mut bindings = self.imp().bindings.borrow_mut();
 
         // Bind fields to selected login data
-        bindings.push(
-            login
-                .bind_property("title", &title_field, "text")
+        bindings.append(&mut vec![
+            login.bind_property("title", &title_field, "text")
                 .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
                 .build(),
-        );
+            login.bind_property("username", &username_field, "text")
+                .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
+                .build(),
+            login.bind_property("password", &password_field, "text")
+                .flags(BindingFlags::BIDIRECTIONAL | BindingFlags::SYNC_CREATE)
+                .build(),
+        ]);
 
         self.imp().current_login.replace(Some(login));
         self.select_login_row();

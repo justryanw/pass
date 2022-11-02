@@ -9,6 +9,8 @@ use gtk::glib;
 #[derive(Default)]
 pub struct LoginObject {
     pub title: RefCell<String>,
+    pub username: RefCell<String>,
+    pub password: RefCell<String>,
 }
 
 #[glib::object_subclass]
@@ -19,8 +21,13 @@ impl ObjectSubclass for LoginObject {
 
 impl ObjectImpl for LoginObject {
     fn properties() -> &'static [ParamSpec] {
-        static PROPERTIES: Lazy<Vec<ParamSpec>> =
-            Lazy::new(|| vec![ParamSpecString::builder("title").build()]);
+        static PROPERTIES: Lazy<Vec<ParamSpec>> = Lazy::new(|| {
+            vec![
+                ParamSpecString::builder("title").build(),
+                ParamSpecString::builder("username").build(),
+                ParamSpecString::builder("password").build(),
+            ]
+        });
         PROPERTIES.as_ref()
     }
 
@@ -32,6 +39,18 @@ impl ObjectImpl for LoginObject {
                     .expect("The value needs to be of type `String`.");
                 self.title.replace(input_value);
             }
+            "username" => {
+                let input_value = value
+                    .get()
+                    .expect("The value needs to be of type `String`.");
+                self.username.replace(input_value);
+            }
+            "password" => {
+                let input_value = value
+                    .get()
+                    .expect("The value needs to be of type `String`.");
+                self.password.replace(input_value);
+            }
             _ => unimplemented!(),
         }
     }
@@ -39,6 +58,8 @@ impl ObjectImpl for LoginObject {
     fn property(&self, _id: usize, pspec: &ParamSpec) -> Value {
         match pspec.name() {
             "title" => self.title.borrow().to_value(),
+            "username" => self.username.borrow().to_value(),
+            "password" => self.password.borrow().to_value(),
             _ => unimplemented!(),
         }
     }

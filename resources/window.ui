@@ -152,7 +152,7 @@
                                       </object>
                                     </child>
                                     <child>
-                                      <object class="AdwPasswordEntryRow">
+                                      <object class="AdwPasswordEntryRow" id="password_field">
                                         <property name="title">Password</property>
                                       </object>
                                     </child>

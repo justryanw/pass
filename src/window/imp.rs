@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::fs::File;
 
-use adw::{prelude::*, EntryRow};
+use adw::{prelude::*, EntryRow, PasswordEntryRow};
 use adw::subclass::prelude::*;
 use adw::Leaflet;
 use glib::Binding;
@@ -22,6 +22,8 @@ pub struct Window {
     pub title_field: TemplateChild<EntryRow>,
     #[template_child]
     pub username_field: TemplateChild<EntryRow>,
+    #[template_child]
+    pub password_field: TemplateChild<PasswordEntryRow>,
     #[template_child]
     pub logins_list: TemplateChild<ListBox>,
     #[template_child]
