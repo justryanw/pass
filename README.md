@@ -7,7 +7,7 @@ The main page is shows a sidebar and the main content.
 ![](./images/4.png)
 
 ### Limited Width
-With a smaler window the page folds to only show the sidebar, clicking on an item brings you to its content with a back button to return.
+With a smaller window the page folds to only show the sidebar, clicking on an item brings you to its content with a back button to return.
 
 ![](./images/5.png)
 ![](./images/6.png)
