@@ -1,17 +1,25 @@
 # Pass
-A linux password manager written in Rust using GTK and Libadwaita.
+A linux password manager written in Rust using GTK4 and Libadwaita.
 
-## Building
-### With Nix
+## Building (Linux, MacOS)
+Tested on Linux and MacOS, WSL2 may work but is untested.
+### Install Nix
+Install Nix using the [Determinate Installer](https://github.com/DeterminateSystems/nix-installer) using the command below.
+```bash
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+```
+Alternatively you can install Nix from the [official website](https://nixos.org/download.html) and enable [nix-command and flakes](https://nixos.wiki/wiki/Flakes) manually.
+
+### Building with Nix
+Clone and enter the repo then use `nix develop` to enter an environment with all the required dependencies.
 ```bash
 git clone https://github.com/justryanw/pass
 cd pass
-nix develop
-cargo run --release
+nix develop --command cargo run --release
 ```
 
-### Without Nix
-Ensure that you have installed [Rust](https://www.rust-lang.org/tools/install), the dependencies for [gtk4-rs](https://gtk-rs.org/gtk4-rs/git/book/installation.html) and [libadwaita](https://gtk-rs.org/gtk4-rs/git/book/libadwaita.html#linux), and [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/).
+### Building without Nix
+Ensure you have [Rust](https://www.rust-lang.org/tools/install), [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/), and the dependencies for [GTK4](https://gtk-rs.org/gtk4-rs/git/book/installation_linux.html) and [Libadwaita](https://gtk-rs.org/gtk4-rs/git/book/libadwaita.html#linux) installed on you system.
 ```bash
 git clone https://github.com/justryanw/pass
 cd pass
@@ -32,7 +40,7 @@ With a smaller window the page folds to only show the sidebar, clicking on an it
 ![](./images/6.png)
 
 ### Placeholder Pages
-Placeholder pages guide the user in inital setup.
+Placeholder pages guide the user in initial setup.
 
 ![](./images/1.png)
 ![](./images/2.png)
