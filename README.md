@@ -6,9 +6,10 @@ Tested on Linux and MacOS.
 Windows / WSL2 may work but is untested.
 
 ### Install Nix
-Install Nix using the [Determinate Installer](https://github.com/DeterminateSystems/nix-installer) using the command below.
+Install Nix using the [Determinate Installer](https://github.com/DeterminateSystems/nix-installer) and refresh your shell.
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+exec $SHELL
 ```
 Alternatively you can install Nix from the [official website](https://nixos.org/download.html) and enable [nix-command and flakes](https://nixos.wiki/wiki/Flakes) manually.
 
@@ -17,7 +18,11 @@ Clone and enter the repo then use `nix develop` to enter an environment with all
 ```bash
 git clone https://github.com/justryanw/pass
 cd pass
-nix develop --command cargo run --release
+nix develop -c $SHELL
+```
+You should now be able to build with cargo.
+```bash
+cargo run --release
 ```
 
 ### Building without Nix
