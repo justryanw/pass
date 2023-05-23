@@ -2,7 +2,9 @@
 A linux password manager written in Rust using GTK4 and Libadwaita.
 
 ## Building (Linux, MacOS)
-Tested on Linux and MacOS, WSL2 may work but is untested.
+Tested on Linux and MacOS. 
+Windows / WSL2 may work but is untested.
+
 ### Install Nix
 Install Nix using the [Determinate Installer](https://github.com/DeterminateSystems/nix-installer) using the command below.
 ```bash
